@@ -1,0 +1,22 @@
+
+
+{# set address-assignment configuration #}
+{%- for pool_name in pools %}
+set access address-assignment pool {{ pool_name }} family inet network {{ pools[pool_name].network_id }} range {{ pools[pool_name].range_name }} low {{ pools[pool_name].low_ip }} high {{ pools[pool_name].high_ip }}
+set access address-assignment pool {{ pool_name }} family inet dhcp-attributes maximum-lease-time {{ pools[pool_name].lease_time }} server-identifier {{ pools[pool_name].router_ip }} router {{ pools[pool_name].router_ip }}
+set access address-assignment pool {{ pool_name }} family inet dhcp-attributes name-server {{ pools[pool_name].dns_prim_ip }}
+set access address-assignment pool {{ pool_name }} family inet dhcp-attributes name-server {{ pools[pool_name].dns_sec_ip }}
+{% endfor %}
+
+
+{# set unnumbered interfaces #}
+{%- for pool_name in pools %}
+set interfaces lo0 unit 0 family inet address {{ pools[pool_name].router_ip }}
+{% endfor %}
+
+{# set vlan ranges #}
+{%- for pool_name in pools %}
+set interfaces ge-1/0/0 flexible-vlan-tagging encapsulation flexible-ethernet-services
+set interfaces ge-1/0/0 auto-configure remove-when-no-subscribers vlan-ranges dynamic-profile junos-default-profile accept dhcp-v4 ranges {{ pool_name|replace("vlan","") }}-{{ pool_name|replace("vlan","") }}
+{% endfor %}
+

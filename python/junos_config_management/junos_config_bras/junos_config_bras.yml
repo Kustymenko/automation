@@ -1,0 +1,29 @@
+---
+pools:
+   vlan1000:
+      network_id: 192.0.2.0/28
+      range_name: range_vlan1000
+      low_ip: 192.0.2.2
+      high_ip: 192.0.2.14
+      lease_time: 1800
+      router_ip: 192.0.2.1
+      dns_prim_ip: 203.0.113.1
+      dns_sec_ip: 203.0.113.2
+   vlan1001:
+      network_id: 192.0.2.16/28
+      range_name: range_vlan1001
+      low_ip: 192.0.2.18
+      high_ip: 192.0.2.30
+      lease_time: 1800
+      router_ip: 192.0.2.17
+      dns_prim_ip: 203.0.113.1
+      dns_sec_ip: 203.0.113.2
+   vlan1002:
+      network_id: 192.0.2.32/28
+      range_name: range_vlan1002
+      low_ip: 192.0.2.34
+      high_ip: 192.0.2.46
+      lease_time: 1800
+      router_ip: 192.0.2.33
+      dns_prim_ip: 203.0.113.1
+      dns_sec_ip: 203.0.113.2

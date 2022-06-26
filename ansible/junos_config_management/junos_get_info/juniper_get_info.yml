@@ -1,0 +1,37 @@
+---
+- name: Get Junos node info
+  hosts: node40
+  no_log: False
+  roles:
+   - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  tasks:
+
+  - name: Checking netconf connectivity
+    wait_for: host={{ ansible_host }} port=830 timeout=5       
+         
+  - name: get common info about node
+    juniper_junos_facts:
+    ignore_errors: True
+    register: junos_facts
+
+    
+  - name: Print juniper node info
+    debug:
+      msg:  
+         - 'Junos node is: "{{ ansible_host }}"'
+         - 'Junos node version is: "{{ junos_facts.ansible_facts.junos.version }}"'
+         - 'Junos node uptime is: "{{ junos_facts.ansible_facts.junos.RE0.up_time }}"'
+         - 'Junos node serial number is: "{{ junos_facts.ansible_facts.junos.serialnumber }}"'
+    register: junos_node_info
+
+  - local_action:
+      module: copy
+      content: "{{ junos_node_info | to_nice_yaml }}"
+      dest: "{{ ansible_results_file }}"
+
+#  -  name: print junos
+#     debug:
+#       var: junos_node_info

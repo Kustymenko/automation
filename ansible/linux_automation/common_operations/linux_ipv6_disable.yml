@@ -1,0 +1,20 @@
+---
+- name: Disable ipv6 on Ubuntu Linux VM
+  hosts: linux30
+  become: true
+
+  tasks: 
+ 
+       - name: disable ipv6 in sysctl 
+         blockinfile: 
+           dest: /etc/sysctl.conf
+           block: |
+             net.ipv6.conf.all.disable_ipv6=1
+             net.ipv6.conf.default.disable_ipv6=1
+             net.ipv6.conf.lo.disable_ipv6=1
+           backup: yes  
+         notify: Reload_sysctl_variables
+
+  handlers:       
+    - name: Reload_sysctl_variables
+      shell: sudo sysctl -p

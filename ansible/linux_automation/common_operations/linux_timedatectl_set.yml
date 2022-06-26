@@ -1,0 +1,14 @@
+---
+- name: Set local timezone on Ubuntu Linux VM
+  hosts: linux30
+  become: true
+
+  tasks: 
+ 
+       - name: timedatectl set-timezone
+         shell: timedatectl set-timezone Europe/London
+         notify: Restart_rsyslog_service
+
+  handlers: 
+    - name: Restart_rsyslog_service
+      service: name=rsyslog state=restarted

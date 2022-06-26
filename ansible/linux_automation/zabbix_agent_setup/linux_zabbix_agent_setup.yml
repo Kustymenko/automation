@@ -1,0 +1,77 @@
+---
+- name: Install and configure zabbix agent 5.4 on Ubuntu Server 20.04 VM
+  hosts: linux30
+  vars:
+    Zabbix_agent_path: /etc/zabbix/zabbix_agentd.conf    
+    Server:            198.51.100.100
+    ServerActive:      198.51.100.30
+    HostMetadata:      Linux
+    HostnameItem:      system.hostname
+  become: true
+
+
+  tasks:   # === Tasks body === #
+
+
+   - name: Populate service facts
+     service_facts:
+
+   - name: List all services
+     debug:
+       var: ansible_facts.services
+
+   -  name: Condition if zabbix-agent exists
+      shell: echo "zabbix-agent exists"
+      register: zabbix_agent_service_not_exists
+      when: ansible_facts.services["zabbix-agent.service"] is not defined
+      ignore_errors: true
+
+
+   - block:    # === Install zabbix-agent block ==== #
+
+
+       - name: Add zabbix repository
+         shell: | 
+           echo "Add zabbix repository"
+           sudo wget https://repo.zabbix.com/zabbix/5.4/ubuntu/pool/main/z/zabbix-release/zabbix-release_5.4-1%2Bubuntu20.04_all.deb
+           sudo dpkg -i zabbix-release_5.4-1+ubuntu20.04_all.deb 
+
+       - name: Apt update
+         apt:
+           upgrade: yes
+           update_cache: yes
+           cache_valid_time: 86400
+
+       - name: Install zabbix-agent
+         shell: sudo apt -y install zabbix-agent
+         register: zabbix_agent_installed
+         #     ignore_errors: true
+
+     when: zabbix_agent_service_not_exists.stdout_lines is defined
+     ignore_errors: true
+
+
+   - block:   # === Configure zabbix-agent block ===#
+      
+
+       - name: Configure zabbix agent
+         lineinfile:
+           dest: "{{ item.dest }}"
+           regexp: "{{ item.regexp }}"
+           line: "{{ item.line }}"
+           backup: yes
+         with_items:
+           - { dest: "{{ Zabbix_agent_path }}", regexp: "Server=127.0.0.1",        line: "Server={{ Server }}" }
+           - { dest: "{{ Zabbix_agent_path }}", regexp: "ServerActive=127.0.0.1",  line: "ServerActive={{ ServerActive }}" }
+           - { dest: "{{ Zabbix_agent_path }}", regexp: "# HostMetadata=",         line: "HostMetadata={{ HostMetadata }}" }
+           - { dest: "{{ Zabbix_agent_path }}", regexp: "# HostnameItem=",         line: "HostnameItem={{ HostnameItem }}" }  
+        
+         notify: Restart_zabbix_agent
+
+     when: zabbix_agent_installed.stdout_lines is defined
+
+       
+  handlers:   # === Restart zabbix-agent handler ===#
+    - name: Restart_zabbix_agent
+      service: name=zabbix-agent state=restarted
+

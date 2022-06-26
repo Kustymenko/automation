@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- Head start -->
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebServer Test Page</title>
+</head>
+<!-- Head end -->
+<!-- Body start -->
+<body>
+<center>
+    <h1> Test Web Page </h1>
+	<h2 align="center"> <font color="green">Web Server welcome page! </font></h2>
+
+	<div id="content" target="If you see this text, the web server is successfully installed and operating."></div>
+</center>
+<script>
+	let span = document.getElementById("content");
+	let TxtArray = span.getAttribute("target").split("  "); 
+	let MaxTxtIndex = TxtArray.length; 
+	var TxtIndex = 0; 
+	typing(TxtIndex, TxtArray[TxtIndex]); 
+
+
+function typing(TxtIndex, text) {
+    var ChrIndex = 0; 
+    var MaxChrIndex = text.length - 1; 
+    var TypeInterval = setInterval(function () {
+        span.innerHTML += text[ChrIndex]; 
+        if (ChrIndex == MaxChrIndex) {
+            clearInterval(TypeInterval);
+            setTimeout(function() { deleting(TxtIndex, text) }, 1000); 
+            
+        } else {
+            ChrIndex += 1; 
+        }
+		}, 200);
+}
+
+function deleting(TxtIndex, text) {
+    var minChrIndex = 0; 
+    var ChrIndex = text.length - 1; 
+    var TypeInterval = setInterval(function () {
+        span.innerHTML = text.substr(0, ChrIndex); 
+        if (ChrIndex == minChrIndex) {
+            clearInterval(TypeInterval);
+            TxtIndex + 1 == MaxTxtIndex ? TxtIndex = 0 : TxtIndex += 1; 
+            setTimeout(function() { typing(TxtIndex, TxtArray[TxtIndex]) }, 1000); 
+        } else {
+            ChrIndex -= 1; 
+        }
+		}, 100);
+}
+</script>
+</body>
+<!-- Body end -->
+</html>

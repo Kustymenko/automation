@@ -1,0 +1,20 @@
+---
+mx_port: ge-1/0/0
+
+unit:
+    unit_id: 123
+    description: BGP_PEER_VID_123
+
+family_options:
+    family_ip: 192.0.2.1
+    family_mask: 30
+
+bgp_group:
+    group_name: WORLD
+    peer_as: 12345
+    local_as: 54321
+    peer_ip: 192.0.2.2
+
+bgp_peer_options:
+        peer_import_policy: WORLD-in
+        peer_export_policy: WORLD-out

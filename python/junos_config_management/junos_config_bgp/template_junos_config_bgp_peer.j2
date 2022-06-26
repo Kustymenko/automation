@@ -1,0 +1,12 @@
+{# Interfaces configuration #}
+set interfaces {{ mx_port }} flexible-vlan-tagging encapsulation flexible-ethernet-services
+set interfaces {{ mx_port }} unit {{ unit.unit_id }} vlan-id {{ unit.unit_id }}
+set interfaces {{ mx_port }} unit {{ unit.unit_id }} description {{ unit.description }}
+set interfaces {{ mx_port }} unit {{ unit.unit_id }} family inet address {{family_options.family_ip }}/{{ family_options.family_mask }}
+
+{# Protocols configuration #}
+set protocols bgp group {{ bgp_group.group_name }} type external peer-as {{ bgp_group.peer_as }} local-as {{ bgp_group.local_as }}
+set protocols bgp group {{ bgp_group.group_name }} neighbor {{ bgp_group.peer_ip }} local-address {{ family_options.family_ip }}
+set protocols bgp group {{ bgp_group.group_name }} neighbor {{ bgp_group.peer_ip }} import {{ bgp_peer_options.peer_import_policy }}
+set protocols bgp group {{ bgp_group.group_name }} neighbor {{ bgp_group.peer_ip }} export {{ bgp_peer_options.peer_export_policy }}
+set protocols bgp group {{ bgp_group.group_name }} neighbor {{ bgp_group.peer_ip }} remove-private
